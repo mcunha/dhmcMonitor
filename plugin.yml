@@ -1,0 +1,4 @@
+name: dhmcOres
+main: me.botsko.dhmcores.DhmcOres
+version: 0.1
+commands:
