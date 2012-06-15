@@ -56,12 +56,14 @@ public class OresBlockBreakEvent implements Listener {
 				ArrayList<Block> matchingBlocks = new ArrayList<Block>();
 				ArrayList<Block> foundores = findNeighborBlocks( block.getType(), block, matchingBlocks );
 				if(!foundores.isEmpty()){
+					String msg = getOreColor(block) + player.getName() + " found " + foundores.size() + " " + getOreNiceName(block);
 					for (Player p : player.getServer().getOnlinePlayers()) {
 						if (p.hasPermission("dhmcores.alert")){
 //							int light = Math.round(((block.getLightLevel()) & 0xFF) * 100) / 15;
-							p.sendMessage( plugin.playerMsg( getOreColor(block) + player.getName() + " found " + foundores.size() + " " + getOreNiceName(block) ) );
+							p.sendMessage( plugin.playerMsg( msg ) );
 						}
 					}
+					plugin.log( msg );
 				}
 			}
 		}
@@ -122,41 +124,19 @@ public class OresBlockBreakEvent implements Listener {
         if(isWatched(currBlock)){
         	
         	matchingBlocks.add(currBlock);
-        	
         	plugin.alertedBlocks.put(currBlock.getLocation(), date.getTime());
         	
-//        	System.out.print("Found Block Location: " + currBlock.getLocation().toString());
-        	
-        	Block xPositive = currBlock.getRelative(1, 0, 0);
-            Block xNegative = currBlock.getRelative(-1, 0, 0);
-            Block zPositive = currBlock.getRelative(0, 0, 1);
-            Block zNegative = currBlock.getRelative(0, 0, -1);
-            Block yPositive = currBlock.getRelative(0, 1, 0);
-            Block yNegative = currBlock.getRelative(0, -1, 0);
-
-            // n
-        	if ( !matchingBlocks.contains(xPositive) ) {
-        		findNeighborBlocks( type, xPositive, matchingBlocks );
-        	}
-        	// s
-        	if ( !matchingBlocks.contains(xNegative) ) {
-        		findNeighborBlocks( type, xNegative, matchingBlocks );
-        	}
-        	// e
-        	if ( !matchingBlocks.contains(zPositive) ) {
-        		findNeighborBlocks( type, zPositive, matchingBlocks );
-        	}
-        	// w
-        	if ( !matchingBlocks.contains(zNegative) ) {
-        		findNeighborBlocks( type, zNegative, matchingBlocks );
-        	}
-        	// u
-        	if ( !matchingBlocks.contains(yPositive) ) {
-        		findNeighborBlocks( type, yPositive, matchingBlocks );
-        	}
-        	// d
-        	if ( !matchingBlocks.contains(yNegative) ) {
-        		findNeighborBlocks( type, yNegative, matchingBlocks );
+        	for(int x = -1; x <= 1; x++){
+        		for(int z = -1; z <= 1; z++){
+        			for(int y = -1; y <= 1; y++){
+	        			Block newblock = currBlock.getRelative(x, y, z);
+//	        			System.out.print("COORDS " + x + " " + z + " " + newblock.getTypeId());
+	        			// ensure it matches the type and wasn't already found
+	        			if( newblock.getType() == type && !matchingBlocks.contains(newblock) ){
+	        				findNeighborBlocks( type, newblock, matchingBlocks );
+	        			}
+	        		}
+        		}
         	}
         }
         

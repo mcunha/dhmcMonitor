@@ -52,10 +52,11 @@ public class DhmcOres extends JavaPlugin {
 		    	// Remove locations logged over five minute ago.
 		    	for (Entry<Location, Long> entry : alertedBlocks.entrySet()){
 		    		long diff = (date.getTime() - entry.getValue()) / 1000;
-		    		if(diff >= 30){
+		    		if(diff >= 60){
 		    			alertedBlocks.remove(entry.getKey());
 		    		}
 		    	}
+		    	log("AlertedBlock Size: " + alertedBlocks.size() );
 		    }
 		}, 1200L, 1200L);	
 	}
