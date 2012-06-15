@@ -1,6 +1,8 @@
 package me.botsko.dhmcores.listeners;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -13,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import me.botsko.dhmcores.DhmcOres;
+import me.botsko.dhmcores.adapters.Hawkeye;
 
 
 public class OresBlockBreakEvent implements Listener {
@@ -28,22 +31,30 @@ public class OresBlockBreakEvent implements Listener {
 	 */
 	protected java.util.Date date = new java.util.Date();
 	
+	/**
+	 * 
+	 */
+	protected HashMap<String,Integer> worlds;
+	
 	
 	/**
 	 * 
 	 * @param plugin
+	 * @throws SQLException 
 	 */
-	public OresBlockBreakEvent( DhmcOres plugin ){
+	public OresBlockBreakEvent( DhmcOres plugin ) throws SQLException{
 		this.plugin = plugin;
+		worlds = plugin.getLoggingInterface().getWorldIds();
 	}
 
 	
 	/**
 	 * Award the player when blocks break if the chosen spell supports it.
 	 * @param event
+	 * @throws SQLException 
 	 */
 	@EventHandler(priority = EventPriority.NORMAL)
-    public void onBlockBreak(final BlockBreakEvent event){
+    public void onBlockBreak(final BlockBreakEvent event) throws SQLException{
 		
 		Block block = event.getBlock();
 		Player player = event.getPlayer();
@@ -51,19 +62,27 @@ public class OresBlockBreakEvent implements Listener {
 //		System.out.print("Block Location: " + block.getLocation().toString());
 //		System.out.print("Alerted Has Location: " + alertedBlocks.contains( block.getLocation() ));
 		if(player.getGameMode() != GameMode.CREATIVE){
+			
 			if(block != null && isWatched(block) && !plugin.alertedBlocks.containsKey( block.getLocation() )){
-				// identify all ore blocks on same Y axis in x/z direction
-				ArrayList<Block> matchingBlocks = new ArrayList<Block>();
-				ArrayList<Block> foundores = findNeighborBlocks( block.getType(), block, matchingBlocks );
-				if(!foundores.isEmpty()){
-					String msg = getOreColor(block) + player.getName() + " found " + foundores.size() + " " + getOreNiceName(block);
-					for (Player p : player.getServer().getOnlinePlayers()) {
-						if (p.hasPermission("dhmcores.alert")){
-//							int light = Math.round(((block.getLightLevel()) & 0xFF) * 100) / 15;
-							p.sendMessage( plugin.playerMsg( msg ) );
+			
+				// check if block placed
+				Hawkeye hk = plugin.getLoggingInterface();
+				boolean wasplaced = hk.wasBlockPlaced( worlds.get( block.getWorld().getName() ), block.getLocation().getX(),block.getLocation().getY(),block.getLocation().getZ() );
+			
+				if(!wasplaced){
+					// identify all ore blocks on same Y axis in x/z direction
+					ArrayList<Block> matchingBlocks = new ArrayList<Block>();
+					ArrayList<Block> foundores = findNeighborBlocks( block.getType(), block, matchingBlocks );
+					if(!foundores.isEmpty()){
+						String msg = getOreColor(block) + player.getName() + " found " + foundores.size() + " " + getOreNiceName(block);
+						for (Player p : player.getServer().getOnlinePlayers()) {
+							if (p.hasPermission("dhmcores.alert")){
+	//							int light = Math.round(((block.getLightLevel()) & 0xFF) * 100) / 15;
+								p.sendMessage( plugin.playerMsg( msg ) );
+							}
 						}
+						plugin.log( msg );
 					}
-					plugin.log( msg );
 				}
 			}
 		}

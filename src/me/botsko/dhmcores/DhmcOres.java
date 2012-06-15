@@ -1,9 +1,12 @@
 package me.botsko.dhmcores;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import me.botsko.dhmcores.adapters.Hawkeye;
 import me.botsko.dhmcores.listeners.OresBlockBreakEvent;
 
 import org.bukkit.ChatColor;
@@ -15,6 +18,10 @@ public class DhmcOres extends JavaPlugin {
 
 	protected Logger log = Logger.getLogger("Minecraft");
 	protected FileConfiguration config;
+	public java.sql.Connection conn;
+	protected Hawkeye hawkeye;
+	
+	protected final String LoggingInterface = "hawkeye";
 	
 	
 	/**
@@ -32,11 +39,78 @@ public class DhmcOres extends JavaPlugin {
 		
 		this.log("Initializing plugin.");
 		
+		handleConfig();
+		
 		removeExpiredLocations();
 		
-		// Assign event listeners
-		getServer().getPluginManager().registerEvents(new OresBlockBreakEvent( this ), this);
+		// Temporary way to load db interfaces, just in case we allow for more someday
+		if(LoggingInterface == "hawkeye"){
+			hawkeye = new Hawkeye(this);
+		}
 		
+		// Assign event listeners
+		try {
+			getServer().getPluginManager().registerEvents(new OresBlockBreakEvent( this ), this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	/**
+	 * 
+	 */
+	public void handleConfig(){
+		
+		config = getConfig();
+		
+		// database configs
+		this.getConfig().set("mysql.hostname", 	this.getConfig().getString("mysql.hostname", "127.0.0.1"));
+		this.getConfig().set("mysql.port", 		this.getConfig().getString("mysql.port", "3306"));
+		this.getConfig().set("mysql.database", 	this.getConfig().getString("mysql.database", "minecraft"));
+		this.getConfig().set("mysql.username", 	this.getConfig().getString("mysql.username", "root"));
+		this.getConfig().set("mysql.password", 	this.getConfig().getString("mysql.password", ""));
+		
+		// other configs
+		this.getConfig().set("debug", this.getConfig().get("debug", false) );
+		
+		saveConfig();
+		
+	}
+	
+	
+	/**
+     * Connects to the MySQL database
+     */
+	public void dbc(){
+    	
+        java.util.Properties conProperties = new java.util.Properties();
+        conProperties.put("user", this.getConfig().getString("mysql.username") );
+        conProperties.put("password", this.getConfig().getString("mysql.password") );
+        conProperties.put("autoReconnect", "true");
+        conProperties.put("maxReconnects", "3");
+        String uri = "jdbc:mysql://"+this.getConfig().getString("mysql.hostname")+":"+this.getConfig().getString("mysql.port")+"/"+this.getConfig().getString("mysql.database");
+        
+        try {
+        	conn = DriverManager.getConnection(uri, conProperties);
+        } catch (SQLException e) {
+            log.throwing("me.botsko.dhmcstats", "dbc()", e);
+        }
+    }
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unused")
+	public Hawkeye getLoggingInterface(){
+		if(LoggingInterface == "hawkeye"){
+			return hawkeye;
+		}
+		return null;
 	}
 	
 	
@@ -52,13 +126,13 @@ public class DhmcOres extends JavaPlugin {
 		    	// Remove locations logged over five minute ago.
 		    	for (Entry<Location, Long> entry : alertedBlocks.entrySet()){
 		    		long diff = (date.getTime() - entry.getValue()) / 1000;
-		    		if(diff >= 60){
+		    		if(diff >= 300){
 		    			alertedBlocks.remove(entry.getKey());
 		    		}
 		    	}
 		    	log("AlertedBlock Size: " + alertedBlocks.size() );
 		    }
-		}, 1200L, 1200L);	
+		}, 1200L, 1200L);
 	}
 	
 	
