@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import me.botsko.dhmcores.adapters.Hawkeye;
 import me.botsko.dhmcores.listeners.OresBlockBreakEvent;
+import me.botsko.dhmcores.listeners.OresPlayerInteractEvent;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -54,6 +55,8 @@ public class DhmcOres extends JavaPlugin {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		getServer().getPluginManager().registerEvents(new OresPlayerInteractEvent( this ), this);
 		
 	}
 	

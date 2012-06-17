@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -74,10 +75,21 @@ public class OresBlockBreakEvent implements Listener {
 					ArrayList<Block> matchingBlocks = new ArrayList<Block>();
 					ArrayList<Block> foundores = findNeighborBlocks( block.getType(), block, matchingBlocks );
 					if(!foundores.isEmpty()){
-						String msg = getOreColor(block) + player.getName() + " found " + foundores.size() + " " + getOreNiceName(block);
+						
+						// Save the block
+						BlockState state = block.getState();
+						
+						// Set to air to get the light
+						block.setType(Material.AIR);
+						int light = block.getLightLevel();
+						light = (light > 0 ? Math.round(((light) & 0xFF) * 100) / 15 : 0);
+						
+						// Restore the block
+						block.setType( state.getType() );
+						
+						String msg = getOreColor(block) + player.getName() + " found " + foundores.size() + " " + getOreNiceName(block) + " " + light + "% light";
 						for (Player p : player.getServer().getOnlinePlayers()) {
 							if (p.hasPermission("dhmcores.alert")){
-	//							int light = Math.round(((block.getLightLevel()) & 0xFF) * 100) / 15;
 								p.sendMessage( plugin.playerMsg( msg ) );
 							}
 						}
