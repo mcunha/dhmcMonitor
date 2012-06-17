@@ -1,22 +1,22 @@
-package me.botsko.dhmcores.adapters;
+package me.botsko.dhmcmonitor.adapters;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import me.botsko.dhmcores.DhmcOres;
+import me.botsko.dhmcmonitor.DhmcMonitor;
 
 public class Hawkeye implements LogAdapter {
 	
-	protected DhmcOres plugin;
+	protected DhmcMonitor plugin;
 	
 	
 	/**
 	 * 
 	 * @param plugin
 	 */
-	public Hawkeye( DhmcOres plugin ){
+	public Hawkeye( DhmcMonitor plugin ){
 		this.plugin = plugin;
 	}
 	

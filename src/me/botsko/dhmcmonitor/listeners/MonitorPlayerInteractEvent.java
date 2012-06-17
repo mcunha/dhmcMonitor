@@ -1,4 +1,4 @@
-package me.botsko.dhmcores.listeners;
+package me.botsko.dhmcmonitor.listeners;
 
 import java.sql.SQLException;
 
@@ -11,15 +11,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import me.botsko.dhmcores.DhmcOres;
+import me.botsko.dhmcmonitor.DhmcMonitor;
 
 
-public class OresPlayerInteractEvent implements Listener {
+public class MonitorPlayerInteractEvent implements Listener {
 	
 	/**
 	 * 
 	 */
-	private DhmcOres plugin;
+	private DhmcMonitor plugin;
 
 	
 	/**
@@ -27,7 +27,7 @@ public class OresPlayerInteractEvent implements Listener {
 	 * @param plugin
 	 * @throws SQLException 
 	 */
-	public OresPlayerInteractEvent( DhmcOres plugin ){
+	public MonitorPlayerInteractEvent( DhmcMonitor plugin ){
 		this.plugin = plugin;
 	}
 

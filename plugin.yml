@@ -1,4 +1,4 @@
-name: dhmcOres
-main: me.botsko.dhmcores.DhmcOres
-version: 0.1
+name: dhmcMonitor
+main: me.botsko.dhmcmonitor.DhmcMonitor
+version: 0.2
 commands:

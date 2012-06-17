@@ -1,4 +1,4 @@
-package me.botsko.dhmcores.adapters;
+package me.botsko.dhmcmonitor.adapters;
 
 import java.sql.SQLException;
 

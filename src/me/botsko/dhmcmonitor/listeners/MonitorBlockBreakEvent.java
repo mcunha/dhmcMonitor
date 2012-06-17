@@ -1,4 +1,4 @@
-package me.botsko.dhmcores.listeners;
+package me.botsko.dhmcmonitor.listeners;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,16 +15,16 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import me.botsko.dhmcores.DhmcOres;
-import me.botsko.dhmcores.adapters.Hawkeye;
+import me.botsko.dhmcmonitor.DhmcMonitor;
+import me.botsko.dhmcmonitor.adapters.Hawkeye;
 
 
-public class OresBlockBreakEvent implements Listener {
+public class MonitorBlockBreakEvent implements Listener {
 	
 	/**
 	 * 
 	 */
-	private DhmcOres plugin;
+	private DhmcMonitor plugin;
 
 	
 	/**
@@ -43,7 +43,7 @@ public class OresBlockBreakEvent implements Listener {
 	 * @param plugin
 	 * @throws SQLException 
 	 */
-	public OresBlockBreakEvent( DhmcOres plugin ) throws SQLException{
+	public MonitorBlockBreakEvent( DhmcMonitor plugin ) throws SQLException{
 		this.plugin = plugin;
 		worlds = plugin.getLoggingInterface().getWorldIds();
 	}

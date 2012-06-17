@@ -1,4 +1,4 @@
-package me.botsko.dhmcores;
+package me.botsko.dhmcmonitor;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -6,23 +6,23 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import me.botsko.dhmcores.adapters.Hawkeye;
-import me.botsko.dhmcores.listeners.OresBlockBreakEvent;
-import me.botsko.dhmcores.listeners.OresPlayerInteractEvent;
+import me.botsko.dhmcmonitor.adapters.Hawkeye;
+import me.botsko.dhmcmonitor.listeners.MonitorBlockBreakEvent;
+import me.botsko.dhmcmonitor.listeners.MonitorPlayerInteractEvent;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class DhmcOres extends JavaPlugin {
+public class DhmcMonitor extends JavaPlugin {
 
 	protected Logger log = Logger.getLogger("Minecraft");
 	protected FileConfiguration config;
 	public java.sql.Connection conn;
 	protected Hawkeye hawkeye;
-	
 	protected final String LoggingInterface = "hawkeye";
+	protected final String log_prefix = "[!]: ";
 	
 	
 	/**
@@ -51,12 +51,12 @@ public class DhmcOres extends JavaPlugin {
 		
 		// Assign event listeners
 		try {
-			getServer().getPluginManager().registerEvents(new OresBlockBreakEvent( this ), this);
+			getServer().getPluginManager().registerEvents(new MonitorBlockBreakEvent( this ), this);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		getServer().getPluginManager().registerEvents(new OresPlayerInteractEvent( this ), this);
+		getServer().getPluginManager().registerEvents(new MonitorPlayerInteractEvent( this ), this);
 		
 	}
 	
@@ -146,7 +146,7 @@ public class DhmcOres extends JavaPlugin {
 	 */
 	public String playerMsg(String msg){
 		if(msg != null){
-			return ChatColor.RED + "[ORE]: " + ChatColor.WHITE + msg;
+			return ChatColor.RED + log_prefix + ChatColor.WHITE + msg;
 		}
 		return "";
 	}
@@ -159,7 +159,7 @@ public class DhmcOres extends JavaPlugin {
 	 */
 	public String playerError(String msg){
 		if(msg != null){
-			return ChatColor.RED + "[ORE]: " + ChatColor.RED + msg;
+			return ChatColor.RED + log_prefix + ChatColor.RED + msg;
 		}
 		return "";
 	}
@@ -171,7 +171,7 @@ public class DhmcOres extends JavaPlugin {
 	 * @param message
 	 */
 	public void log(String message){
-		log.info("[ORE]: " + message);
+		log.info(log_prefix + message);
 	}
 	
 	
@@ -181,7 +181,7 @@ public class DhmcOres extends JavaPlugin {
 	 */
 	public void debug(String message){
 		if(this.getConfig().getBoolean("debug")){
-			log.info("[ORE]: " + message);
+			log.info(log_prefix + message);
 		}
 	}
 	
