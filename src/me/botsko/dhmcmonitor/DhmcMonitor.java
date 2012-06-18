@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import me.botsko.dhmcmonitor.adapters.Hawkeye;
 import me.botsko.dhmcmonitor.listeners.MonitorBlockBreakEvent;
+import me.botsko.dhmcmonitor.listeners.MonitorPlayerChatEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorPlayerInteractEvent;
 
 import org.bukkit.ChatColor;
@@ -40,7 +41,12 @@ public class DhmcMonitor extends JavaPlugin {
 		
 		this.log("Initializing plugin.");
 		
-		handleConfig();
+		// Load configuration, or install if new
+		MonitorConfig mc = new MonitorConfig( this );
+		config = mc.getConfig();
+		
+		// Load language files
+//		lang = mc.getLang();
 		
 		removeExpiredLocations();
 		
@@ -57,29 +63,7 @@ public class DhmcMonitor extends JavaPlugin {
 		}
 		
 		getServer().getPluginManager().registerEvents(new MonitorPlayerInteractEvent( this ), this);
-		
-	}
-	
-	
-	
-	/**
-	 * 
-	 */
-	public void handleConfig(){
-		
-		config = getConfig();
-		
-		// database configs
-		this.getConfig().set("mysql.hostname", 	this.getConfig().getString("mysql.hostname", "127.0.0.1"));
-		this.getConfig().set("mysql.port", 		this.getConfig().getString("mysql.port", "3306"));
-		this.getConfig().set("mysql.database", 	this.getConfig().getString("mysql.database", "minecraft"));
-		this.getConfig().set("mysql.username", 	this.getConfig().getString("mysql.username", "root"));
-		this.getConfig().set("mysql.password", 	this.getConfig().getString("mysql.password", ""));
-		
-		// other configs
-		this.getConfig().set("debug", this.getConfig().get("debug", false) );
-		
-		saveConfig();
+		getServer().getPluginManager().registerEvents(new MonitorPlayerChatEvent( this ), this);
 		
 	}
 	
