@@ -9,6 +9,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,7 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import me.botsko.dhmcmonitor.DhmcMonitor;
-import me.botsko.dhmcmonitor.adapters.Hawkeye;
+import me.botsko.dhmcmonitor.adapters.LogAdapter;
 
 
 public class MonitorBlockBreakEvent implements Listener {
@@ -39,7 +40,9 @@ public class MonitorBlockBreakEvent implements Listener {
 	 */
 	public MonitorBlockBreakEvent( DhmcMonitor plugin ) throws SQLException{
 		this.plugin = plugin;
-		worlds = plugin.getLoggingInterface().getWorldIds();
+		if(plugin.getConfig().getBoolean("hawkeye.enabled")){
+			worlds = plugin.getLoggingInterface().getWorldIds();
+		}
 	}
 
 	
@@ -59,9 +62,12 @@ public class MonitorBlockBreakEvent implements Listener {
 			if(block != null && isWatched(block) && !plugin.alertedBlocks.containsKey( block.getLocation() )){
 			
 				// check if block placed
-				Hawkeye hk = plugin.getLoggingInterface();
-				boolean wasplaced = hk.wasBlockPlaced( worlds.get( block.getWorld().getName() ), block.getLocation().getX(),block.getLocation().getY(),block.getLocation().getZ() );
-			
+				boolean wasplaced = false;
+				if(plugin.getConfig().getBoolean("hawkeye.enabled")){
+					LogAdapter la = plugin.getLoggingInterface();
+					wasplaced = la.wasBlockPlaced( worlds.get( block.getWorld().getName() ), block.getLocation().getX(),block.getLocation().getY(),block.getLocation().getZ() );
+				}
+				
 				if(!wasplaced){
 					// identify all ore blocks on same Y axis in x/z direction
 					ArrayList<Block> matchingBlocks = new ArrayList<Block>();
@@ -105,6 +111,9 @@ public class MonitorBlockBreakEvent implements Listener {
 				return ChatColor.GOLD;
 			case IRON_ORE:
 				return ChatColor.GRAY;
+			case GLOWING_REDSTONE_ORE:
+			case REDSTONE_ORE:
+				return ChatColor.RED;
 			default:
 				return ChatColor.WHITE;
 		}
@@ -117,7 +126,7 @@ public class MonitorBlockBreakEvent implements Listener {
 	 * @return
 	 */
 	protected String getOreNiceName( Block block ){
-		return block.getType().toString().replace("_", " ").toLowerCase();
+		return block.getType().toString().replace("_", " ").toLowerCase().replace("glowing", " ");
 	}
 	
 	
@@ -127,10 +136,30 @@ public class MonitorBlockBreakEvent implements Listener {
 	 * @return
 	 */
 	protected boolean isWatched( Block block ){
+		
 		Material type = block.getType();
-		return (type == Material.DIAMOND_ORE || type == Material.GOLD_ORE || type == Material.LAPIS_ORE || type == Material.IRON_ORE);
+		FileConfiguration config = plugin.getConfig();
+		
+		if(type == Material.DIAMOND_ORE && config.getBoolean("alerts.ores.diamond")){
+			return true;
+		}
+		if(type == Material.GOLD_ORE && config.getBoolean("alerts.ores.gold")){
+			return true;
+		}
+		if(type == Material.IRON_ORE && config.getBoolean("alerts.ores.iron")){
+			return true;
+		}
+		if(type == Material.LAPIS_ORE && config.getBoolean("alerts.ores.lapis")){
+			return true;
+		}
+		if( (type == Material.GLOWING_REDSTONE_ORE || type == Material.REDSTONE_ORE) && config.getBoolean("alerts.ores.redstone")){
+			return true;
+		}
+		if(type == Material.COAL_ORE && config.getBoolean("alerts.ores.coal")){
+			return true;
+		}
+		return false;
 	}
-	
 	
 	
 	/**

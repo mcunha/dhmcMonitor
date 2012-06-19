@@ -1,5 +1,7 @@
 package me.botsko.dhmcmonitor.listeners;
 
+import java.util.List;
+
 import me.botsko.dhmcmonitor.DhmcMonitor;
 
 import org.bukkit.entity.Player;
@@ -16,7 +18,7 @@ public class MonitorCommandPreprocessor implements Listener {
 	 */
 	private DhmcMonitor plugin;
 	
-	String[] illegalCommands = {"op","stop","reload","deop"};
+	List<String> illegalCommands;
 	
 	
 	/**
@@ -24,8 +26,10 @@ public class MonitorCommandPreprocessor implements Listener {
 	 * @param plugin
 	 * @throws SQLException 
 	 */
+	@SuppressWarnings("unchecked")
 	public MonitorCommandPreprocessor( DhmcMonitor plugin ){
 		this.plugin = plugin;
+		illegalCommands = (List<String>) plugin.getConfig().getList("illegal_commands");
 	}
 	
 	

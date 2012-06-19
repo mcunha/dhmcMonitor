@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import me.botsko.dhmcmonitor.adapters.Hawkeye;
+import me.botsko.dhmcmonitor.adapters.LogAdapter;
 import me.botsko.dhmcmonitor.listeners.MonitorBlockBreakEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorBlockPlaceEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorCommandPreprocessor;
@@ -25,8 +26,7 @@ public class DhmcMonitor extends JavaPlugin {
 	protected Logger log = Logger.getLogger("Minecraft");
 	protected FileConfiguration config;
 	public java.sql.Connection conn;
-	protected Hawkeye hawkeye;
-	protected final String LoggingInterface = "hawkeye";
+	protected LogAdapter loggingInterface = null;
 	protected final String log_prefix = "[!]: ";
 	
 	
@@ -43,18 +43,13 @@ public class DhmcMonitor extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		
-		this.log("Initializing plugin.");
+		this.log("Initializing plugin. By Viveleroi, Darkhelmet Minecraft: s.dhmc.us");
 		
 		// Load configuration, or install if new
 		MonitorConfig mc = new MonitorConfig( this );
 		config = mc.getConfig();
 		
 		removeExpiredLocations();
-		
-		// Temporary way to load db interfaces, just in case we allow for more someday
-		if(LoggingInterface == "hawkeye"){
-			hawkeye = new Hawkeye(this);
-		}
 		
 		// Assign event listeners
 		try {
@@ -96,12 +91,11 @@ public class DhmcMonitor extends JavaPlugin {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unused")
-	public Hawkeye getLoggingInterface(){
-		if(LoggingInterface == "hawkeye"){
-			return hawkeye;
+	public LogAdapter getLoggingInterface(){
+		if(getConfig().getBoolean("hawkeye.enabled")){
+			loggingInterface = new Hawkeye(this);
 		}
-		return null;
+		return loggingInterface;
 	}
 	
 	
@@ -133,7 +127,7 @@ public class DhmcMonitor extends JavaPlugin {
 	 */
 	public void alertPlayers( String msg ){
 		for (Player p : getServer().getOnlinePlayers()) {
-			if (p.hasPermission("dhmcores.alert")){
+			if (p.hasPermission("dhmcmonitor.alert")){
 				p.sendMessage( playerMsg( msg ) );
 			}
 		}

@@ -58,28 +58,31 @@ public class MonitorPlayerChatEvent implements Listener {
 	@SuppressWarnings("unchecked")
 	public MonitorPlayerChatEvent( DhmcMonitor plugin ){
 		this.plugin = plugin;
-		MonitorConfig mc = new MonitorConfig( plugin );
-		rejectedProfanity = mc.getProfanityConfig();
-		rejectWords = (List<String>) rejectedProfanity.getList("reject-words");
-		censorWords = (List<String>) rejectedProfanity.getList("censor-words");
 		
-		// Build leet conversion.
-		leet.put("1", "l");
-		leet.put("1", "i");
-		leet.put("2", "z");
-		leet.put("2", "r");
-		leet.put("3", "e");
-		leet.put("4", "h");
-		leet.put("4", "a");
-		leet.put("5", "s");
-		leet.put("6", "g");
-		leet.put("7", "l");
-		leet.put("8", "a");
-		leet.put("9", "p");
-		leet.put("9", "g");
-		leet.put("0", "o");
-		leet.put("13", "b");
-		leet.put("44", "m");
+		if(plugin.getConfig().getBoolean("censors.censor_profanity")){
+			MonitorConfig mc = new MonitorConfig( plugin );
+			rejectedProfanity = mc.getProfanityConfig();
+			rejectWords = (List<String>) rejectedProfanity.getList("reject-words");
+			censorWords = (List<String>) rejectedProfanity.getList("censor-words");
+			
+			// Build leet conversion.
+			leet.put("1", "l");
+			leet.put("1", "i");
+			leet.put("2", "z");
+			leet.put("2", "r");
+			leet.put("3", "e");
+			leet.put("4", "h");
+			leet.put("4", "a");
+			leet.put("5", "s");
+			leet.put("6", "g");
+			leet.put("7", "l");
+			leet.put("8", "a");
+			leet.put("9", "p");
+			leet.put("9", "g");
+			leet.put("0", "o");
+			leet.put("13", "b");
+			leet.put("44", "m");
+		}
 	}
 
 	
@@ -95,7 +98,7 @@ public class MonitorPlayerChatEvent implements Listener {
 		Player player = event.getPlayer();
 		
 		// No caps for strings longer than 5 with > 20% caps
-		if(msg.length() > 5){
+		if(plugin.getConfig().getBoolean("censors.limit_text_caps") && msg.length() > 5){
 			if(capsPercentage(msg) > 20){
 				msg = msg.toLowerCase();
 				event.setMessage( msg );
@@ -104,29 +107,32 @@ public class MonitorPlayerChatEvent implements Listener {
 		
 		
 		// scan for attempted self-censorship
-		if(msg.contains("***")){
+		if(plugin.getConfig().getBoolean("censors.block_fake_censor") && msg.contains("***")){
 			
 			event.setCancelled(true);
 			player.sendMessage( plugin.playerError("Sorry but we do not allow stars instead of curse words.") );
 			
 		} else {
+			
+			if(plugin.getConfig().getBoolean("censors.censor_profanity")){
 		
-			// Scan for reject words - words that trigger a complete rejection of the message
-			if(containsSuspectedProfanity(msg, rejectWords)){
-				
-				event.setCancelled(true);
-				player.sendMessage( plugin.playerError("Profanity, or trying to bypass the censor is NOT allowed.") );
-				
-				String alert_msg = player.getName() + " was warned for profanity.";
-				plugin.alertPlayers(alert_msg);
-				plugin.log( alert_msg );
-				
-			} else {
-				// scan for illegal words
-				for(String w : censorWords){
-					msg = msg.replaceAll(w, "*****");
+				// Scan for reject words - words that trigger a complete rejection of the message
+				if(containsSuspectedProfanity(msg, rejectWords)){
+					
+					event.setCancelled(true);
+					player.sendMessage( plugin.playerError("Profanity, or trying to bypass the censor is NOT allowed.") );
+					
+					String alert_msg = player.getName() + " was warned for profanity.";
+					plugin.alertPlayers(alert_msg);
+					plugin.log( alert_msg );
+					
+				} else {
+					// scan for illegal words
+					for(String w : censorWords){
+						msg = msg.replaceAll(w, "*****");
+					}
+					event.setMessage( msg );
 				}
-				event.setMessage( msg );
 			}
 		}
 	}

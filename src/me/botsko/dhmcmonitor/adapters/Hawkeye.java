@@ -36,24 +36,29 @@ public class Hawkeye implements LogAdapter {
 		
 		if (plugin.conn == null || plugin.conn.isClosed()) plugin.dbc();
 		
-		String s = String.format("SELECT COUNT(*) as rows FROM hawkeye WHERE x = ? AND y = ? AND z = ? AND action = 1 AND world_id = ?");
-        PreparedStatement pstmt = plugin.conn.prepareStatement(s);
-        pstmt.setDouble(1, d);
-        pstmt.setDouble(2, f);
-        pstmt.setDouble(3, g);
-        pstmt.setInt(4, world_id);
-        pstmt.execute();
-		ResultSet ids = pstmt.getResultSet();
+		String hawk_table = plugin.getConfig().getString("hawkeye.tablename");
 		
-		try {
-			ids.first();
-			if(ids.getInt("rows") > 0){
-				found = true;
+		if( !hawk_table.isEmpty() ){
+		
+			String s = String.format("SELECT COUNT(*) as rows FROM "+hawk_table+" WHERE x = ? AND y = ? AND z = ? AND action = 1 AND world_id = ?");
+	        PreparedStatement pstmt = plugin.conn.prepareStatement(s);
+	        pstmt.setDouble(1, d);
+	        pstmt.setDouble(2, f);
+	        pstmt.setDouble(3, g);
+	        pstmt.setInt(4, world_id);
+	        pstmt.execute();
+			ResultSet ids = pstmt.getResultSet();
+			
+			try {
+				ids.first();
+				if(ids.getInt("rows") > 0){
+					found = true;
+				}
+				ids.close();
+				pstmt.close();
+				plugin.conn.close();
+			} catch(Exception e){
 			}
-			ids.close();
-			pstmt.close();
-			plugin.conn.close();
-		} catch(Exception e){
 		}
         return found;
 	}
@@ -71,19 +76,23 @@ public class Hawkeye implements LogAdapter {
 		
 		if (plugin.conn == null || plugin.conn.isClosed()) plugin.dbc();
 		
-		String s = String.format("SELECT * FROM hawk_worlds");
-        PreparedStatement pstmt = plugin.conn.prepareStatement(s);
-        pstmt.execute();
-		ResultSet rs = pstmt.getResultSet();
-		
-		try {
-    		while(rs.next()){
-    			worlds.put(rs.getString("world"),Integer.parseInt(rs.getString("world_id")));
-    		}
-			rs.close();
-			pstmt.close();
-			plugin.conn.close();
-		} catch(Exception e){
+		String hawk_table = plugin.getConfig().getString("hawkeye.tablename_worlds");
+		if( !hawk_table.isEmpty() ){
+			
+			String s = String.format("SELECT * FROM "+hawk_table);
+	        PreparedStatement pstmt = plugin.conn.prepareStatement(s);
+	        pstmt.execute();
+			ResultSet rs = pstmt.getResultSet();
+			
+			try {
+	    		while(rs.next()){
+	    			worlds.put(rs.getString("world"),Integer.parseInt(rs.getString("world_id")));
+	    		}
+				rs.close();
+				pstmt.close();
+				plugin.conn.close();
+			} catch(Exception e){
+			}
 		}
 		return worlds;
 	}

@@ -1,10 +1,17 @@
 ## dhmcMonitor
 
-This plugin was developed to replace our reliance on other plugins that aren't working well enough.
+
+dhmcMonitor is a security plugin for your server. Monitor ore finds, flint and steel use, tnt and lava placement, smarter profanity filters, caps use, illegal command use, and more.
+
+This plugin was custom-developed to end our reliance on other plugins that aren't working well enough, or have not been maintained. 
+
+All alerts for moderators, require the permission `dhmcmonitor.alert`
+
+Most of the features below are configurable (at least to enable/disable) and come with sensible defaults.
 
 **Ores**
 
-This plugin will alert moderators when a player finds any ores (except coal and redstone currently). It will display the number of ores found and the light level.
+This plugin will alert moderators when a player finds any ores. It will display the number of ores found and the light level.
 
 Right now, the plugin requires access to Hawkeye to verify the ores have not been placed by a player.
 

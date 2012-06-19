@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,6 +40,28 @@ public class MonitorConfig {
 		config.addDefault("mysql.database", "minecraft");
 		config.addDefault("mysql.username", "root");
 		config.addDefault("mysql.password", "");
+		
+		List<String> illegal_commands = new ArrayList<String>();
+		illegal_commands.add("op");
+		illegal_commands.add("deop");
+		illegal_commands.add("stop");
+		illegal_commands.add("reload");
+		config.addDefault("illegal_commands", illegal_commands);
+		
+		config.addDefault("alerts.ores.coal", false);
+		config.addDefault("alerts.ores.redstone", false);
+		config.addDefault("alerts.ores.lapis", true);
+		config.addDefault("alerts.ores.iron", true);
+		config.addDefault("alerts.ores.gold", true);
+		config.addDefault("alerts.ores.diamond", true);
+		
+		config.addDefault("censors.limit_text_caps", true);
+		config.addDefault("censors.block_fake_censor", true);
+		config.addDefault("censors.censor_profanity", true);
+		
+		config.addDefault("hawkeye.enabled", true);
+		config.addDefault("hawkeye.tablename", "hawkeye");
+		config.addDefault("hawkeye.tablename_worlds", "hawk_worlds");
 		
 		// Copy defaults
 		config.options().copyDefaults(true);
