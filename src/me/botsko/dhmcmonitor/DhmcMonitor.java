@@ -117,6 +117,7 @@ public class DhmcMonitor extends JavaPlugin {
 		    	// Remove locations logged over five minute ago.
 		    	for (Entry<Location, Long> entry : alertedBlocks.entrySet()){
 		    		long diff = (date.getTime() - entry.getValue()) / 1000;
+		    		System.out.print("AlertedBlock diff: " + diff);
 		    		if(diff >= 300){
 		    			alertedBlocks.remove(entry.getKey());
 		    		}

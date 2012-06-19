@@ -25,12 +25,6 @@ public class MonitorBlockBreakEvent implements Listener {
 	 * 
 	 */
 	private DhmcMonitor plugin;
-
-	
-	/**
-	 * It's the date yo!
-	 */
-	protected java.util.Date date = new java.util.Date();
 	
 	/**
 	 * 
@@ -60,8 +54,6 @@ public class MonitorBlockBreakEvent implements Listener {
 		Block block = event.getBlock();
 		Player player = event.getPlayer();
 		
-//		System.out.print("Block Location: " + block.getLocation().toString());
-//		System.out.print("Alerted Has Location: " + alertedBlocks.contains( block.getLocation() ));
 		if(player.getGameMode() != GameMode.CREATIVE){
 			
 			if(block != null && isWatched(block) && !plugin.alertedBlocks.containsKey( block.getLocation() )){
@@ -151,13 +143,13 @@ public class MonitorBlockBreakEvent implements Listener {
         if(isWatched(currBlock)){
         	
         	matchingBlocks.add(currBlock);
+        	java.util.Date date = new java.util.Date();
         	plugin.alertedBlocks.put(currBlock.getLocation(), date.getTime());
         	
         	for(int x = -1; x <= 1; x++){
         		for(int z = -1; z <= 1; z++){
         			for(int y = -1; y <= 1; y++){
 	        			Block newblock = currBlock.getRelative(x, y, z);
-//	        			System.out.print("COORDS " + x + " " + z + " " + newblock.getTypeId());
 	        			// ensure it matches the type and wasn't already found
 	        			if( newblock.getType() == type && !matchingBlocks.contains(newblock) ){
 	        				findNeighborBlocks( type, newblock, matchingBlocks );
