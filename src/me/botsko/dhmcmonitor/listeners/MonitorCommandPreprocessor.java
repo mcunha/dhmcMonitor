@@ -16,7 +16,7 @@ public class MonitorCommandPreprocessor implements Listener {
 	 */
 	private DhmcMonitor plugin;
 	
-	String[] illegalCommands = {"op"};
+	String[] illegalCommands = {"op","stop","reload","deop"};
 	
 	
 	/**
@@ -39,9 +39,12 @@ public class MonitorCommandPreprocessor implements Listener {
         String cmd = event.getMessage();
         
         for (String s : illegalCommands){
-            if (cmd.startsWith(s)){
-            	plugin.alertPlayers( player.getName() + " attempted an illegal command: " + cmd );
+        	String msg = player.getName() + " attempted an illegal command: " + cmd;
+            if (cmd.startsWith("/"+s)){
+            	player.sendMessage( plugin.playerError("You have attempted an illegal command. Staff has been notified immediately and the event is logged.") );
+            	plugin.alertPlayers( msg );
             	event.setCancelled(true);
+            	plugin.log(msg);
             }
         }
     }

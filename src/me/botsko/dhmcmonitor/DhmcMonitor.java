@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import me.botsko.dhmcmonitor.adapters.Hawkeye;
 import me.botsko.dhmcmonitor.listeners.MonitorBlockBreakEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorBlockPlaceEvent;
+import me.botsko.dhmcmonitor.listeners.MonitorCommandPreprocessor;
 import me.botsko.dhmcmonitor.listeners.MonitorPlayerBucketEmptyEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorPlayerChatEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorPlayerInteractEvent;
@@ -66,6 +67,7 @@ public class DhmcMonitor extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new MonitorPlayerChatEvent( this ), this);
 		getServer().getPluginManager().registerEvents(new MonitorBlockPlaceEvent( this ), this);
 		getServer().getPluginManager().registerEvents(new MonitorPlayerBucketEmptyEvent( this ), this);
+		getServer().getPluginManager().registerEvents(new MonitorCommandPreprocessor( this ), this);
 		
 	}
 	
