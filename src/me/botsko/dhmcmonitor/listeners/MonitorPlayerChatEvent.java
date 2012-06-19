@@ -125,6 +125,7 @@ public class MonitorPlayerChatEvent implements Listener {
 					String alert_msg = player.getName() + " was warned for profanity.";
 					plugin.alertPlayers(alert_msg);
 					plugin.log( alert_msg );
+					plugin.log( "Original was: " + event.getMessage() );
 					
 				} else {
 					// scan for illegal words

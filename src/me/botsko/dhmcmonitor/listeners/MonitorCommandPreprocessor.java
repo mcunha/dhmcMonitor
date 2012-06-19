@@ -41,10 +41,9 @@ public class MonitorCommandPreprocessor implements Listener {
     public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String cmd = event.getMessage();
-        
         for (String s : illegalCommands){
         	String msg = player.getName() + " attempted an illegal command: " + cmd;
-            if (cmd.startsWith("/"+s)){
+            if (cmd.equalsIgnoreCase("/"+s) || cmd.startsWith("/"+s+" ")){
             	player.sendMessage( plugin.playerError("You have attempted an illegal command. Staff has been notified immediately and the event is logged.") );
             	plugin.alertPlayers( msg );
             	event.setCancelled(true);
