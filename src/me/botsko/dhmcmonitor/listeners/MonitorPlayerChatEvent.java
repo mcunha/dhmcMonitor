@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 
 import me.botsko.dhmcmonitor.DhmcMonitor;
+import me.botsko.dhmcmonitor.MonitorConfig;
 
 
 /**
@@ -27,8 +29,20 @@ public class MonitorPlayerChatEvent implements Listener {
 	 */
 	private DhmcMonitor plugin;
 	
+	/**
+	 * 
+	 */
+	protected FileConfiguration rejectedProfanity;
 	
-	protected String[] rejectedProfanity = {"fuck","shit","hell"};
+	/**
+	 * 
+	 */
+	protected List<String> rejectWords;
+	
+	/**
+	 * 
+	 */
+	protected HashMap<String,String> leet = new HashMap<String,String>();
 	
 	
 	/**
@@ -36,8 +50,30 @@ public class MonitorPlayerChatEvent implements Listener {
 	 * @param plugin
 	 * @throws SQLException 
 	 */
+	@SuppressWarnings("unchecked")
 	public MonitorPlayerChatEvent( DhmcMonitor plugin ){
 		this.plugin = plugin;
+		MonitorConfig mc = new MonitorConfig( plugin );
+		rejectedProfanity = mc.getProfanityConfig();
+		rejectWords = (List<String>) rejectedProfanity.getList("reject-words");
+		
+		// Build leet conversion.
+		leet.put("1", "l");
+		leet.put("1", "i");
+		leet.put("2", "z");
+		leet.put("2", "r");
+		leet.put("3", "e");
+		leet.put("4", "h");
+		leet.put("4", "a");
+		leet.put("5", "s");
+		leet.put("6", "g");
+		leet.put("7", "l");
+		leet.put("8", "a");
+		leet.put("9", "p");
+		leet.put("9", "g");
+		leet.put("0", "o");
+		leet.put("13", "b");
+		leet.put("44", "m");
 	}
 
 	
@@ -49,11 +85,14 @@ public class MonitorPlayerChatEvent implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
     public void onPlayerChat(final PlayerChatEvent event){
 		
-		String msg = event.getMessage().toLowerCase();
+		String msg = event.getMessage();
 		Player player = event.getPlayer();
 		
 		// sorry man, no caps
-		event.setMessage( msg );
+		if(capsPercentage(msg) > 20){
+			msg = msg.toLowerCase();
+			event.setMessage( msg );
+		}
 	
 		if(containsSuspectedProfanity(msg)){
 			
@@ -61,13 +100,25 @@ public class MonitorPlayerChatEvent implements Listener {
 			player.sendMessage( plugin.playerError("Profanity, or trying to bypass the censor is NOT allowed.") );
 			
 			String alert_msg = player.getName() + " was warned for profanity.";
-			for (Player p : player.getServer().getOnlinePlayers()) {
-				if (p.hasPermission("dhmcores.alert")){
-					p.sendMessage( plugin.playerMsg( alert_msg ) );
-				}
-			}
+			plugin.alertPlayers(alert_msg);
 			plugin.log( alert_msg );
 		}
+	}
+	
+	
+	/**
+	 * 
+	 * @param msg
+	 * @return
+	 */
+	public double capsPercentage(String msg){
+		int count = 0;
+		for (char ch : msg.toCharArray()){
+			if (Character.isUpperCase(ch)){
+				count++;
+			}
+		}
+		return (count > 0 ? (( (double)count / (double)msg.length()) * 100) : 100);
 	}
 	
 	
@@ -84,15 +135,12 @@ public class MonitorPlayerChatEvent implements Listener {
 		// replace all invalid characters
 		_tmp = _tmp.replaceAll("[^a-z0-9]", "");
 		
-		System.out.print("CLEANED MSG: " + _tmp);
-		
 		// get possible leet versions
 		List<String> variations = convertLeetSpeak(_tmp);
 		
 		for(String variation : variations){
-			System.out.print("MSG VARIATION: " + variation);
 			// scan for illegal words
-			for(String w : rejectedProfanity){
+			for(String w : rejectWords){
 				if(variation.contains(w.toString())){
 					return true;
 				}
@@ -110,24 +158,9 @@ public class MonitorPlayerChatEvent implements Listener {
 	 */
 	protected List<String> convertLeetSpeak( String msg ){
 		
-		// Begin list of all variations, inluding original
+		// Begin list of all variations, including original
 		List<String> _variations = new ArrayList<String>();
 		_variations.add(msg);
-		
-		// Build leet translator.
-		HashMap<String,String> leet = new HashMap<String,String>();
-		leet.put("1", "l");
-		leet.put("1", "i");
-		leet.put("2", "z");
-		leet.put("3", "e");
-		leet.put("4", "h");
-		leet.put("5", "s");
-		leet.put("6", "g");
-		leet.put("7", "l");
-		leet.put("8", "a");
-		leet.put("9", "p");
-		leet.put("9", "g");
-		leet.put("0", "o");
 		
 		for (Entry<String, String> entry : leet.entrySet()){
 			if(msg.contains( entry.getKey() )){

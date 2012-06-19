@@ -54,16 +54,14 @@ public class MonitorConfig {
 	 * Loads language configuration
 	 * @return
 	 */
-	public FileConfiguration getLang(){
-		
-		String lang_file = "en-us"; // @todo will be a config someday
+	public FileConfiguration getProfanityConfig(){
 		
 		// Read the base config
-		FileConfiguration config = loadConfig( "defaults/", lang_file );
+		FileConfiguration config = loadConfig( "defaults/", "profanity" );
 		
 		// copy defaults and save config
 		config.options().copyDefaults(true);
-		write( lang_file, config );
+		write( "profanity", config );
 		
 		return config;
 		

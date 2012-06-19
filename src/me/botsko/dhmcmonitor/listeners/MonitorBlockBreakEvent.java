@@ -88,11 +88,7 @@ public class MonitorBlockBreakEvent implements Listener {
 						block.setType( state.getType() );
 						
 						String msg = getOreColor(block) + player.getName() + " found " + foundores.size() + " " + getOreNiceName(block) + " " + light + "% light";
-						for (Player p : player.getServer().getOnlinePlayers()) {
-							if (p.hasPermission("dhmcores.alert")){
-								p.sendMessage( plugin.playerMsg( msg ) );
-							}
-						}
+						plugin.alertPlayers(msg);
 						plugin.log( msg );
 					}
 				}

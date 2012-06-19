@@ -8,12 +8,15 @@ import java.util.logging.Logger;
 
 import me.botsko.dhmcmonitor.adapters.Hawkeye;
 import me.botsko.dhmcmonitor.listeners.MonitorBlockBreakEvent;
+import me.botsko.dhmcmonitor.listeners.MonitorBlockPlaceEvent;
+import me.botsko.dhmcmonitor.listeners.MonitorPlayerBucketEmptyEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorPlayerChatEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorPlayerInteractEvent;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DhmcMonitor extends JavaPlugin {
@@ -45,9 +48,6 @@ public class DhmcMonitor extends JavaPlugin {
 		MonitorConfig mc = new MonitorConfig( this );
 		config = mc.getConfig();
 		
-		// Load language files
-//		lang = mc.getLang();
-		
 		removeExpiredLocations();
 		
 		// Temporary way to load db interfaces, just in case we allow for more someday
@@ -64,6 +64,8 @@ public class DhmcMonitor extends JavaPlugin {
 		
 		getServer().getPluginManager().registerEvents(new MonitorPlayerInteractEvent( this ), this);
 		getServer().getPluginManager().registerEvents(new MonitorPlayerChatEvent( this ), this);
+		getServer().getPluginManager().registerEvents(new MonitorBlockPlaceEvent( this ), this);
+		getServer().getPluginManager().registerEvents(new MonitorPlayerBucketEmptyEvent( this ), this);
 		
 	}
 	
@@ -120,6 +122,19 @@ public class DhmcMonitor extends JavaPlugin {
 		    	log("AlertedBlock Size: " + alertedBlocks.size() );
 		    }
 		}, 1200L, 1200L);
+	}
+	
+	
+	/**
+	 * 
+	 * @param msg
+	 */
+	public void alertPlayers( String msg ){
+		for (Player p : getServer().getOnlinePlayers()) {
+			if (p.hasPermission("dhmcores.alert")){
+				p.sendMessage( playerMsg( msg ) );
+			}
+		}
 	}
 	
 	

@@ -48,11 +48,7 @@ public class MonitorPlayerInteractEvent implements Listener {
 			// are they using flint?
 			if(player.getItemInHand().getType() == Material.FLINT_AND_STEEL){
 				String msg = ChatColor.GRAY + player.getName() + " used flint and steel.";
-				for (Player p : player.getServer().getOnlinePlayers()) {
-					if (p.hasPermission("dhmcores.alert")){
-						p.sendMessage( plugin.playerMsg( msg ) );
-					}
-				}
+				plugin.alertPlayers(msg);
 			}
 		}
 	}

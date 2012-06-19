@@ -1,9 +1,7 @@
-censors:
-- cum
+reject-words:
 - butthurt
 - stfu
 - gtfo
-- anal
 - anus
 - arse
 - ballsack
@@ -24,7 +22,6 @@ censors:
 - dick
 - dildo
 - dyke
-- fag
 - faggot
 - feck
 - fellate
@@ -33,16 +30,13 @@ censors:
 - fuck
 - fudgepacker
 - flange
-- Goddamn
-- God damn
+- goddamn
 - homo
 - jerk
 - jizz
 - knobend
-- knob end
 - labia
 - lmfao
-- muff
 - nigger
 - nigga
 - penis
@@ -52,7 +46,6 @@ censors:
 - pussy
 - queer
 - scrotum
-- sex
 - shit
 - slut
 - smegma
@@ -63,3 +56,9 @@ censors:
 - wank
 - whore
 - wtf
+censor-words:
+- cum
+- anal
+- fag
+- muff
+- sex
