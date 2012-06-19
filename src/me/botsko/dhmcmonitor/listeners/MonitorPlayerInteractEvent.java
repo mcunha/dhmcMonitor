@@ -1,6 +1,7 @@
 package me.botsko.dhmcmonitor.listeners;
 
 import java.sql.SQLException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,6 +21,12 @@ public class MonitorPlayerInteractEvent implements Listener {
 	 * 
 	 */
 	private DhmcMonitor plugin;
+	
+	/**
+	 * Store locations of blocks already alerted so we don't count
+	 * them again. This is only temporary.
+	 */
+	public ConcurrentHashMap<Player,Integer> flintSteelEvents = new ConcurrentHashMap<Player,Integer>();
 
 	
 	/**
@@ -47,9 +54,38 @@ public class MonitorPlayerInteractEvent implements Listener {
 			
 			// are they using flint?
 			if(player.getItemInHand().getType() == Material.FLINT_AND_STEEL){
-				String msg = ChatColor.GRAY + player.getName() + " used flint and steel.";
-				plugin.alertPlayers(msg);
+				
+				// Existing count
+				int count = 0;
+				
+				if(flintSteelEvents.containsKey(player)){
+					count = flintSteelEvents.get(player);
+				}
+				count = count + 1;
+				flintSteelEvents.put(player, count );
+				
+				if(count == 5){
+					String msg = ChatColor.GRAY + player.getName() + " continues to use flint and steel - pausing warnings.";
+					plugin.alertPlayers(msg);
+				} else {
+					if(count < 5){
+						String msg = ChatColor.GRAY + player.getName() + " used flint and steel";
+						plugin.alertPlayers(msg);
+					}
+				}
 			}
 		}
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void removeExpiredLocations(){
+		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
+		    public void run() {
+		    	flintSteelEvents = new ConcurrentHashMap<Player,Integer>();
+		    }
+		}, 18000L, 18000L);
 	}
 }

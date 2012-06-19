@@ -106,8 +106,7 @@ public class DhmcMonitor extends JavaPlugin {
 	
 	
 	/**
-	 * If a user disconnects in an unknown way that is never caught by onPlayerQuit,
-	 * this will force close all records except for players currently online.
+	 * 
 	 */
 	public void removeExpiredLocations(){
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable() {
