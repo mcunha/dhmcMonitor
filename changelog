@@ -1,0 +1,11 @@
+Version 0.1
+- Added ores alerts
+- Added hawkeye support
+Version 0.2
+- Added light level to ore warnings
+- Adding caps, profanity filters
+- Added flint and steel use warning, with cap of 5 warnings
+- Added tnt and lava placement warnings
+- Added list of illegal commands with prevention and alerts
+
+
