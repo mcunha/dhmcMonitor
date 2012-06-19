@@ -42,6 +42,11 @@ public class MonitorPlayerChatEvent implements Listener {
 	/**
 	 * 
 	 */
+	protected List<String> censorWords;
+	
+	/**
+	 * 
+	 */
 	protected HashMap<String,String> leet = new HashMap<String,String>();
 	
 	
@@ -56,6 +61,7 @@ public class MonitorPlayerChatEvent implements Listener {
 		MonitorConfig mc = new MonitorConfig( plugin );
 		rejectedProfanity = mc.getProfanityConfig();
 		rejectWords = (List<String>) rejectedProfanity.getList("reject-words");
+		censorWords = (List<String>) rejectedProfanity.getList("censor-words");
 		
 		// Build leet conversion.
 		leet.put("1", "l");
@@ -88,20 +94,40 @@ public class MonitorPlayerChatEvent implements Listener {
 		String msg = event.getMessage();
 		Player player = event.getPlayer();
 		
-		// sorry man, no caps
-		if(capsPercentage(msg) > 20){
-			msg = msg.toLowerCase();
-			event.setMessage( msg );
+		// No caps for strings longer than 5 with > 20% caps
+		if(msg.length() > 5){
+			if(capsPercentage(msg) > 20){
+				msg = msg.toLowerCase();
+				event.setMessage( msg );
+			}
 		}
-	
-		if(containsSuspectedProfanity(msg)){
+		
+		
+		// scan for attempted self-censorship
+		if(msg.contains("***")){
 			
 			event.setCancelled(true);
-			player.sendMessage( plugin.playerError("Profanity, or trying to bypass the censor is NOT allowed.") );
+			player.sendMessage( plugin.playerError("Sorry but we do not allow stars instead of curse words.") );
 			
-			String alert_msg = player.getName() + " was warned for profanity.";
-			plugin.alertPlayers(alert_msg);
-			plugin.log( alert_msg );
+		} else {
+		
+			// Scan for reject words - words that trigger a complete rejection of the message
+			if(containsSuspectedProfanity(msg, rejectWords)){
+				
+				event.setCancelled(true);
+				player.sendMessage( plugin.playerError("Profanity, or trying to bypass the censor is NOT allowed.") );
+				
+				String alert_msg = player.getName() + " was warned for profanity.";
+				plugin.alertPlayers(alert_msg);
+				plugin.log( alert_msg );
+				
+			} else {
+				// scan for illegal words
+				for(String w : censorWords){
+					msg = msg.replaceAll(w, "*****");
+				}
+				event.setMessage( msg );
+			}
 		}
 	}
 	
@@ -127,7 +153,7 @@ public class MonitorPlayerChatEvent implements Listener {
 	 * @param msg
 	 * @return
 	 */
-	protected boolean containsSuspectedProfanity( String msg ){
+	protected boolean containsSuspectedProfanity( String msg, List<String> wordlist ){
 		
 		// ensure lower case
 		String _tmp = msg.toLowerCase();
@@ -140,8 +166,8 @@ public class MonitorPlayerChatEvent implements Listener {
 		
 		for(String variation : variations){
 			// scan for illegal words
-			for(String w : rejectWords){
-				if(variation.contains(w.toString())){
+			for(String w : wordlist){
+				if(variation.contains(w)){
 					return true;
 				}
 			}
