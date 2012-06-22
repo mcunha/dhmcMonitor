@@ -23,10 +23,9 @@ public class MonitorPlayerInteractEvent implements Listener {
 	private DhmcMonitor plugin;
 	
 	/**
-	 * Store locations of blocks already alerted so we don't count
-	 * them again. This is only temporary.
+	 * 
 	 */
-	public ConcurrentHashMap<Player,Integer> flintSteelEvents = new ConcurrentHashMap<Player,Integer>();
+	public ConcurrentHashMap<Player,Integer> countedEvents = new ConcurrentHashMap<Player,Integer>();
 
 	
 	/**
@@ -58,11 +57,11 @@ public class MonitorPlayerInteractEvent implements Listener {
 				// Existing count
 				int count = 0;
 				
-				if(flintSteelEvents.containsKey(player)){
-					count = flintSteelEvents.get(player);
+				if(countedEvents.containsKey(player)){
+					count = countedEvents.get(player);
 				}
 				count = count + 1;
-				flintSteelEvents.put(player, count );
+				countedEvents.put(player, count );
 				
 				if(count == 5){
 					String msg = ChatColor.GRAY + player.getName() + " continues to use flint and steel - pausing warnings.";
@@ -84,7 +83,7 @@ public class MonitorPlayerInteractEvent implements Listener {
 	public void removeExpiredLocations(){
 		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
 		    public void run() {
-		    	flintSteelEvents = new ConcurrentHashMap<Player,Integer>();
+		    	countedEvents = new ConcurrentHashMap<Player,Integer>();
 		    }
 		}, 18000L, 18000L);
 	}

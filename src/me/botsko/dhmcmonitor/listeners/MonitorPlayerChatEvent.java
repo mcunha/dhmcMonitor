@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 
 import me.botsko.dhmcmonitor.DhmcMonitor;
-import me.botsko.dhmcmonitor.MonitorConfig;
 
 
 /**
@@ -32,21 +30,6 @@ public class MonitorPlayerChatEvent implements Listener {
 	/**
 	 * 
 	 */
-	protected FileConfiguration rejectedProfanity;
-	
-	/**
-	 * 
-	 */
-	protected List<String> rejectWords;
-	
-	/**
-	 * 
-	 */
-	protected List<String> censorWords;
-	
-	/**
-	 * 
-	 */
 	protected HashMap<String,String> leet = new HashMap<String,String>();
 	
 	
@@ -55,15 +38,10 @@ public class MonitorPlayerChatEvent implements Listener {
 	 * @param plugin
 	 * @throws SQLException 
 	 */
-	@SuppressWarnings("unchecked")
 	public MonitorPlayerChatEvent( DhmcMonitor plugin ){
 		this.plugin = plugin;
 		
 		if(plugin.getConfig().getBoolean("censors.censor_profanity")){
-			MonitorConfig mc = new MonitorConfig( plugin );
-			rejectedProfanity = mc.getProfanityConfig();
-			rejectWords = (List<String>) rejectedProfanity.getList("reject-words");
-			censorWords = (List<String>) rejectedProfanity.getList("censor-words");
 			
 			// Build leet conversion.
 			leet.put("1", "l");
@@ -117,19 +95,18 @@ public class MonitorPlayerChatEvent implements Listener {
 			if(plugin.getConfig().getBoolean("censors.censor_profanity")){
 		
 				// Scan for reject words - words that trigger a complete rejection of the message
-				if(containsSuspectedProfanity(msg, rejectWords)){
+				if(containsSuspectedProfanity(msg, plugin.rejectWords)){
 					
 					event.setCancelled(true);
-					player.sendMessage( plugin.playerError("Profanity, or trying to bypass the censor is NOT allowed.") );
+					player.sendMessage( plugin.playerError("Profanity or trying to bypass the censor is NOT allowed.") );
 					
-					String alert_msg = player.getName() + " was warned for profanity.";
+					String alert_msg = player.getName() + "'s message was blocked for profanity.";
 					plugin.alertPlayers(alert_msg);
-					plugin.log( alert_msg );
-					plugin.log( "Original was: " + event.getMessage() );
+					plugin.log( player.getName()+"'s message was blocked for profanity. Original was: " + event.getMessage() );
 					
 				} else {
 					// scan for illegal words
-					for(String w : censorWords){
+					for(String w : plugin.censorWords){
 						msg = msg.replaceAll(w, "*****");
 					}
 					event.setMessage( msg );

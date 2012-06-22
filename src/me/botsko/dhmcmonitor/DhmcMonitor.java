@@ -2,12 +2,14 @@ package me.botsko.dhmcmonitor;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import me.botsko.dhmcmonitor.adapters.Hawkeye;
 import me.botsko.dhmcmonitor.adapters.LogAdapter;
+import me.botsko.dhmcmonitor.commands.MonitorCommandExecutor;
 import me.botsko.dhmcmonitor.listeners.MonitorBlockBreakEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorBlockPlaceEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorCommandPreprocessor;
@@ -17,6 +19,7 @@ import me.botsko.dhmcmonitor.listeners.MonitorPlayerInteractEvent;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +31,9 @@ public class DhmcMonitor extends JavaPlugin {
 	public java.sql.Connection conn;
 	protected LogAdapter loggingInterface = null;
 	protected final String log_prefix = "[!]: ";
+	protected FileConfiguration rejectedProfanity;
+	public List<String> rejectWords;
+	public List<String> censorWords;
 	
 	
 	/**
@@ -45,12 +51,10 @@ public class DhmcMonitor extends JavaPlugin {
 		
 		this.log("Initializing plugin. By Viveleroi, Darkhelmet Minecraft: s.dhmc.us");
 		
-		// Load configuration, or install if new
-		MonitorConfig mc = new MonitorConfig( this );
-		config = mc.getConfig();
+		loadConfigs();
 		
 		removeExpiredLocations();
-		
+	
 		// Assign event listeners
 		try {
 			getServer().getPluginManager().registerEvents(new MonitorBlockBreakEvent( this ), this);
@@ -64,6 +68,25 @@ public class DhmcMonitor extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new MonitorPlayerBucketEmptyEvent( this ), this);
 		getServer().getPluginManager().registerEvents(new MonitorCommandPreprocessor( this ), this);
 		
+		getCommand("monitor").setExecutor( (CommandExecutor) new MonitorCommandExecutor(this) );
+		
+	}
+	
+	
+	/**
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	public void loadConfigs(){
+		// Load configuration, or install if new
+		MonitorConfig mc = new MonitorConfig( this );
+		config = mc.getConfig();
+		
+		if(getConfig().getBoolean("censors.censor_profanity")){
+			rejectedProfanity = mc.getProfanityConfig();
+			rejectWords = (List<String>) rejectedProfanity.getList("reject-words");
+			censorWords = (List<String>) rejectedProfanity.getList("censor-words");
+		}
 	}
 	
 	

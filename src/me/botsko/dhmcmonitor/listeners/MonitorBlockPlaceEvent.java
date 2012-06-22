@@ -1,5 +1,8 @@
 package me.botsko.dhmcmonitor.listeners;
 
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -17,6 +20,11 @@ public class MonitorBlockPlaceEvent implements Listener {
 	 * 
 	 */
 	private DhmcMonitor plugin;
+	
+	/**
+	 * 
+	 */
+	public ConcurrentHashMap<Player,Integer> countedEvents = new ConcurrentHashMap<Player,Integer>();
 	
 	
 	/**
@@ -41,7 +49,25 @@ public class MonitorBlockPlaceEvent implements Listener {
 		Player player = event.getPlayer();
 		
 		if(block.getType() == Material.TNT){
-			plugin.alertPlayers( player.getName() + " placed tnt." );
+			
+			// Existing count
+			int count = 0;
+			
+			if(countedEvents.containsKey(player)){
+				count = countedEvents.get(player);
+			}
+			count = count + 1;
+			countedEvents.put(player, count );
+			
+			if(count == 5){
+				String msg = ChatColor.GRAY + player.getName() + " continues to place tnt - pausing warnings.";
+				plugin.alertPlayers(msg);
+			} else {
+				if(count < 5){
+					String msg = ChatColor.GRAY + player.getName() + " placed tnt";
+					plugin.alertPlayers(msg);
+				}
+			}
 		}
 	}
 }

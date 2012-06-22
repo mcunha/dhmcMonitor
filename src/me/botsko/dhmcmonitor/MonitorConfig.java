@@ -54,6 +54,7 @@ public class MonitorConfig {
 		config.addDefault("alerts.ores.iron", true);
 		config.addDefault("alerts.ores.gold", true);
 		config.addDefault("alerts.ores.diamond", true);
+//		config.addDefault("alerts.ores.emerald", true);
 		
 		config.addDefault("censors.limit_text_caps", true);
 		config.addDefault("censors.block_fake_censor", true);

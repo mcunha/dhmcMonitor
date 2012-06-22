@@ -7,5 +7,8 @@ Version 0.2
 - Added flint and steel use warning, with cap of 5 warnings
 - Added tnt and lava placement warnings
 - Added list of illegal commands with prevention and alerts
-
+Version 0.2.1
+- Added placeholders for 1.3 emeralds
+- Lava/tnt placements now have warnings pause too
+- Added ability to reload configs with /monitor reload
 
