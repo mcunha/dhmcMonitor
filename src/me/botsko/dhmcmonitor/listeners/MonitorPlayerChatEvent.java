@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import me.botsko.dhmcmonitor.DhmcMonitor;
 
@@ -70,7 +70,7 @@ public class MonitorPlayerChatEvent implements Listener {
 	 * @throws SQLException 
 	 */
 	@EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerChat(final PlayerChatEvent event){
+    public void onPlayerChat(final AsyncPlayerChatEvent event){
 		
 		String msg = event.getMessage();
 		Player player = event.getPlayer();

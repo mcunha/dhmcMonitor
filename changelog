@@ -11,4 +11,7 @@ Version 0.2.1
 - Added placeholders for 1.3 emeralds
 - Lava/tnt placements now have warnings pause too
 - Added ability to reload configs with /monitor reload
-
+Version 0.2.2
+- Enabled emerald ore.
+Version 0.2.3
+- Updated to AsyncPlayerChatEvent

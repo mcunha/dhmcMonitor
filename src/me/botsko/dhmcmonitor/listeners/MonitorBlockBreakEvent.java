@@ -114,8 +114,8 @@ public class MonitorBlockBreakEvent implements Listener {
 			case GLOWING_REDSTONE_ORE:
 			case REDSTONE_ORE:
 				return ChatColor.RED;
-//			case EMERALD_ORE:
-//				return ChatColor.GREEN;
+			case EMERALD_ORE:
+				return ChatColor.GREEN;
 			default:
 				return ChatColor.WHITE;
 		}
@@ -160,9 +160,9 @@ public class MonitorBlockBreakEvent implements Listener {
 		if(type == Material.COAL_ORE && config.getBoolean("alerts.ores.coal")){
 			return true;
 		}
-//		if(type == Material.EMERALD_ORE && config.getBoolean("alerts.ores.emerald")){
-//			return true;
-//		}
+		if(type == Material.EMERALD_ORE && config.getBoolean("alerts.ores.emerald")){
+			return true;
+		}
 		return false;
 	}
 	
