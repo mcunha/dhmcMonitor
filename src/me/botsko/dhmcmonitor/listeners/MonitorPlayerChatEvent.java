@@ -107,7 +107,7 @@ public class MonitorPlayerChatEvent implements Listener {
 				} else {
 					// scan for illegal words
 					for(String w : plugin.censorWords){
-						msg = msg.replaceAll(w, "*****");
+						msg = msg.replaceAll("(?i)"+w, "*****");
 					}
 					event.setMessage( msg );
 				}

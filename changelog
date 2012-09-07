@@ -15,3 +15,5 @@ Version 0.2.2
 - Enabled emerald ore.
 Version 0.2.3
 - Updated to AsyncPlayerChatEvent
+Version 0.2.4
+- Fixed censor-words missing replacement when not lower-case.
