@@ -1,6 +1,6 @@
 name: dhmcMonitor
 main: me.botsko.dhmcmonitor.DhmcMonitor
-version: 0.2.4
+version: 0.2.5
 commands:
    monitor:
       description: Admins commands for dhmcMonitor

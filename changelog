@@ -17,3 +17,5 @@ Version 0.2.3
 - Updated to AsyncPlayerChatEvent
 Version 0.2.4
 - Fixed censor-words missing replacement when not lower-case.
+Version 0.2.5
+- Added pistons to alert system

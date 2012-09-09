@@ -26,6 +26,11 @@ public class MonitorBlockPlaceEvent implements Listener {
 	 */
 	public ConcurrentHashMap<Player,Integer> countedEvents = new ConcurrentHashMap<Player,Integer>();
 	
+	/**
+	 * 
+	 */
+	public ConcurrentHashMap<Player,Integer> countedPistonEvents = new ConcurrentHashMap<Player,Integer>();
+	
 	
 	/**
 	 * 
@@ -65,6 +70,29 @@ public class MonitorBlockPlaceEvent implements Listener {
 			} else {
 				if(count < 5){
 					String msg = ChatColor.GRAY + player.getName() + " placed tnt";
+					plugin.alertPlayers(msg);
+				}
+			}
+		}
+		
+		
+		if(block.getType() == Material.PISTON_BASE || block.getType() == Material.PISTON_STICKY_BASE){
+			
+			// Existing count
+			int count = 0;
+			
+			if(countedPistonEvents.containsKey(player)){
+				count = countedPistonEvents.get(player);
+			}
+			count = count + 1;
+			countedPistonEvents.put(player, count );
+			
+			if(count == 5){
+				String msg = ChatColor.GRAY + player.getName() + " continues to place pistons - pausing warnings.";
+				plugin.alertPlayers(msg);
+			} else {
+				if(count < 5){
+					String msg = ChatColor.GRAY + player.getName() + " placed a piston";
 					plugin.alertPlayers(msg);
 				}
 			}
