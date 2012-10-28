@@ -13,6 +13,7 @@ import me.botsko.dhmcmonitor.commands.MonitorCommandExecutor;
 import me.botsko.dhmcmonitor.listeners.MonitorBlockBreakEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorBlockPlaceEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorCommandPreprocessor;
+import me.botsko.dhmcmonitor.listeners.MonitorCreatureSpawnEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorPlayerBucketEmptyEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorPlayerChatEvent;
 import me.botsko.dhmcmonitor.listeners.MonitorPlayerInteractEvent;
@@ -67,6 +68,7 @@ public class DhmcMonitor extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new MonitorBlockPlaceEvent( this ), this);
 		getServer().getPluginManager().registerEvents(new MonitorPlayerBucketEmptyEvent( this ), this);
 		getServer().getPluginManager().registerEvents(new MonitorCommandPreprocessor( this ), this);
+		getServer().getPluginManager().registerEvents(new MonitorCreatureSpawnEvent( this ), this);
 		
 		getCommand("monitor").setExecutor( (CommandExecutor) new MonitorCommandExecutor(this) );
 		
