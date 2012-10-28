@@ -8,6 +8,7 @@
 *.swp
 *.vi
 *~
+*.class
 
 # OS or Editor folders
 .DS_Store
